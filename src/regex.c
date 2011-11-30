@@ -1,8 +1,9 @@
 #include <regex.h>
 #include <stdio.h>
-#include "nxval.h"
+#include <stdlib.h>
+#include "nxobj.h"
 
-nx_obj *regex_mach_all(char *pattern, char *str, size_t nmatch) {
+nx_obj *regex_match_all(char *pattern, char *str, size_t nmatch) {
     int r;
     regex_t preg;
     if ((r = regcomp(&preg, pattern, REG_EXTENDED))) {
@@ -20,7 +21,10 @@ nx_obj *regex_mach_all(char *pattern, char *str, size_t nmatch) {
     int n;
 
     while (1) {
+        //fprintf(stdout, "Go\n");
+        //fprintf(stdout, "Go%d\n",strlen(str));
         int r2=regexec(&preg, str, nmatch , match, 0);
+        //fprintf(stdout, "Gone\n");
         if (r2==REG_NOMATCH) {
             break;
         }
