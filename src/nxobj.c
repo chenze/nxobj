@@ -25,22 +25,40 @@ nx_obj *nx_obj_init(void) {
     return obj;
 }
 void nx_obj_retain(nx_obj *obj) {
+    if (!obj) {
+        return;
+    }
     ++obj->refcount;
 }
 
 bool nx_is_str(nx_obj *obj) {
+    if (!obj) {
+        return false;
+    }
     return obj->type==NX_TYPE_STR;
 }
 bool nx_is_int(nx_obj *obj) {
+    if (!obj) {
+        return false;
+    }
     return obj->type==NX_TYPE_INT;
 }
 bool nx_is_arr(nx_obj *obj) {
+    if (!obj) {
+        return false;
+    }
     return obj->type==NX_TYPE_ARR;
 }
 bool nx_is_dict(nx_obj *obj) {
+    if (!obj) {
+        return false;
+    }
     return obj->type==NX_TYPE_DICT;
 }
 bool nx_is_ptr(nx_obj *obj) {
+    if (!obj) {
+        return false;
+    }
     return obj->type==NX_TYPE_PTR;
 }
 
@@ -220,6 +238,9 @@ nx_result_t nx_dict_add_str(nx_obj *dict, const char *key, const char *str, int6
     return nx_dict_add(dict, key, value);
 }
 nx_obj *nx_dict(nx_obj *dict, const char *key) {
+    if (!dict || !key) {
+        return NULL;
+    }
     nx_dict_pair_t *pair = nx_dict_pair_get_by_key(dict->value.dict.pair, key);
     if (!pair) {
         return NULL;
@@ -228,6 +249,9 @@ nx_obj *nx_dict(nx_obj *dict, const char *key) {
 }
 char *nx_dict_str(nx_obj *dict, const char *key) {
     nx_dict_pair_t *pair = nx_dict_pair_get_by_key(dict->value.dict.pair, key);
+    if (!pair) {
+        return NULL;
+    }
     return nx_str((nx_obj *)pair->value);
 }
 int64_t nx_dict_strlen(nx_obj *dict, const char *key) {
@@ -446,6 +470,47 @@ nx_obj *nx_ptr_init(void *ptr, int64_t len) {
 
     return obj;
 }
+
+char *nx_join(nx_obj *obj,const char *kv_delimiter,const char *obj_delimiter) {
+    char *join_string=NULL; 
+    uint16_t pd_len=strlen(obj_delimiter);
+    uint16_t kvd_len=strlen(kv_delimiter);
+    uint16_t str_len=0;
+    uint16_t str_pre_len=0;
+    long i,c;
+
+    if (!nx_is_dict(obj)) {
+        join_string = malloc(1);
+        bzero(join_string, 1);
+    } else {
+        c=nx_dict_count(obj);
+        const char *key;
+        const char *value;
+        for (i=0;i<c;++i) {
+            key=nx_dict_key_at(obj, i);
+            value=nx_str(nx_dict_value_at(obj, i));
+
+            if (join_string) {
+                str_pre_len=str_len;
+                str_len+=strlen(key)+strlen(value)+pd_len+kvd_len+1;
+                join_string=realloc(join_string,str_len);
+                memset(join_string+str_pre_len,0,str_len-str_pre_len);
+                strcat(join_string,obj_delimiter);
+            } else {
+                str_len+=strlen(key)+strlen(value)+kvd_len+1;
+                join_string=malloc(str_len);
+                memset(join_string,0,str_len);
+            }
+            strcat(join_string,key);
+            strcat(join_string,kv_delimiter);
+            strcat(join_string,value);
+        }
+ 
+    }
+
+    return join_string;
+}
+
 
 void nx_dump(nx_obj *obj) {
     nx_dump_with_depth(obj, 0);

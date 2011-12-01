@@ -95,6 +95,7 @@ nx_dict_pair_t *nx_dict_pair_add(nx_dict_pair_t *dict,const char *key, void *val
 nx_dict_pair_t *nx_dict_pair_remove(nx_dict_pair_t *dict,const char *key);
 nx_dict_pair_t *nx_dict_pair_get_by_key(nx_dict_pair_t *dict,const char *key);
 nx_result_t nx_dict_pair_free(nx_dict_pair_t *dict);
+char *nx_join(nx_obj *obj,const char *obj_delimiter,const char *pair_delimiter);
 
 void nx_dump_with_depth(nx_obj *obj, int depth);
 void nx_dump(nx_obj *obj);
