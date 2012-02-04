@@ -4,7 +4,7 @@
 @implementation  NSDictionary (NSDictionary_nxobj)
 
 + (NSDictionary *)dictionaryWithNXObj:(nx_obj *)obj {
-    if (!nx_is_dict(obj)) {
+    if (!obj || !nx_is_dict(obj)) {
         return NULL;
     }
     NSMutableDictionary *dict=[NSMutableDictionary dictionary];
@@ -55,7 +55,7 @@
 
 @implementation NSArray (NSArray_nxobj)
 + (NSArray *)arrayWithNXObj:(nx_obj *)obj {
-    if (!nx_is_arr(obj)) {
+    if (!obj || !nx_is_arr(obj)) {
         return NULL;
     }
     NSMutableArray *arr=[NSMutableArray array];
